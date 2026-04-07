@@ -2,51 +2,60 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Grade 9 Produtos V9 - Farmácia Real</title>
+    <title>Sistema de Etiquetas - Farmácia Real</title>
     <style>
         @media screen {
-            body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-            .container { display: flex; gap: 20px; max-width: 1300px; width: 100%; margin-top: 20px; }
-            .painel-input { 
-                flex: 1; background: white; padding: 20px; border-radius: 12px; 
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto;
-            }
+            body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+            .menu-layout { background: #2b388f; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 10px; color: white; align-items: center; flex-wrap: wrap; justify-content: center; }
+            .btn-layout { background: white; color: #2b388f; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+            .btn-layout.active { background: #ed1c24; color: white; }
+            
+            .container { display: flex; gap: 20px; max-width: 1300px; width: 100%; align-items: flex-start; }
+            .painel-input { flex: 1; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-height: 85vh; overflow-y: auto; }
             .prod-box { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
-            .prod-box h4 { margin: 0 0 5px 0; color: #2b388f; font-size: 14px; }
             input { width: 100%; padding: 8px; margin: 3px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+            
             .painel-preview { flex: 1.2; position: sticky; top: 20px; text-align: center; }
             #folhaCanvas { background: white; border: 1px solid #999; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 100%; height: auto; }
+            
             .btn-print { background: #28a745; color: white; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-bottom: 10px; width: 100%; }
-            .btn-clear { background: #dc3545; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; }
-            .label-upload { background: #2b388f; color: white; padding: 12px 25px; border-radius: 5px; cursor: pointer; display: inline-block; font-weight: bold; }
+            .label-upload { background: #333; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-bottom: 15px; display: inline-block; font-weight: bold; }
         }
 
         @media print {
-            @page { size: A4; margin: 0; }
             body { margin: 0; padding: 0; background: none; }
-            .painel-input, .btn-print, .btn-clear, .label-upload, h2 { display: none !important; }
-            #folhaCanvas { width: 210mm; height: 297mm; display: block; border: none; margin: 0; }
+            .menu-layout, .painel-input, .btn-print, .label-upload, h2 { display: none !important; }
+            #folhaCanvas { display: block; border: none; margin: 0; }
+            .print-portrait { width: 210mm; height: 297mm; }
+            .print-landscape { width: 297mm; height: 210mm; }
         }
+        
+        .page-portrait { @page { size: A4 portrait; margin: 0; } }
+        .page-landscape { @page { size: A4 landscape; margin: 0; } }
     </style>
 </head>
-<body>
+<body class="page-portrait">
 
-    <h2>Gerador de Etiquetas V9 - Farmácia Real</h2>
-    
+    <h2>Sistema de Etiquetas Farmácia Real</h2>
+
     <label class="label-upload">
-        1. CARREGAR LAYOUT BASE (FUNDO)
+        1. CARREGAR ARQUIVO BASE (PNG/JPG)
         <input type="file" id="loader" accept="image/*" style="display:none">
     </label>
 
-    <div class="container" id="mainApp">
-        <div class="painel-input">
-            <div id="inputsContainer"></div>
-            <button class="btn-clear" onclick="limparTudo()">LIMPAR TODOS OS CAMPOS</button>
-        </div>
-        
+    <div class="menu-layout">
+        <span>2. FORMATO:</span>
+        <button class="btn-layout" onclick="mudarLayout(this, 1, 1, 1, 'portrait')">1 (A4)</button>
+        <button class="btn-layout" onclick="mudarLayout(this, 2, 2, 1, 'landscape')">2 UNID. (PAISAGEM)</button>
+        <button class="btn-layout" onclick="mudarLayout(this, 4, 2, 2, 'portrait')">4 UNID.</button>
+        <button class="btn-layout active" onclick="mudarLayout(this, 9, 3, 3, 'portrait')">9 UNID.</button>
+    </div>
+
+    <div class="container">
+        <div class="painel-input" id="inputsContainer"></div>
         <div class="painel-preview">
-            <button class="btn-print" onclick="window.print()">IMPRIMIR FOLHA CHEIA (A4)</button>
-            <canvas id="folhaCanvas"></canvas>
+            <button class="btn-print" onclick="window.print()">IMPRIMIR AGORA</button>
+            <canvas id="folhaCanvas" class="print-portrait"></canvas>
         </div>
     </div>
 
@@ -56,52 +65,50 @@
     const loader = document.getElementById('loader');
     let imgBase = new Image();
 
+    let gradeAtual = { total: 9, cols: 3, lins: 3, orientacao: 'portrait' };
     canvasA4.width = 2480; 
     canvasA4.height = 3508;
 
-    const container = document.getElementById('inputsContainer');
-    for (let i = 1; i <= 9; i++) {
-        const salvo = JSON.parse(localStorage.getItem(`prod_v9_${i}`)) || {nome: '', preco: '', cod: ''};
-        container.innerHTML += `
-            <div class="prod-box">
-                <h4>Produto ${i}</h4>
-                <input type="text" id="p${i}_nome" value="${salvo.nome}" placeholder="NOME DO PRODUTO" oninput="atualizarEGravar(${i})">
-                <input type="text" id="p${i}_preco" value="${salvo.preco}" placeholder="PREÇO" oninput="atualizarEGravar(${i})">
-                <input type="text" id="p${i}_cod" value="${salvo.cod}" placeholder="CÓDIGO" oninput="atualizarEGravar(${i})">
-            </div>`;
-    }
-
     loader.onchange = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
         const reader = new FileReader();
         reader.onload = (event) => {
             imgBase = new Image();
-            imgBase.onload = () => { desenharGrade(); };
+            imgBase.onload = () => desenharGrade();
             imgBase.src = event.target.result;
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(e.target.files[0]);
     };
 
-    function atualizarEGravar(id) {
-        const dados = {
-            nome: document.getElementById(`p${id}_nome`).value,
-            preco: document.getElementById(`p${id}_preco`).value,
-            cod: document.getElementById(`p${id}_cod`).value
-        };
-        localStorage.setItem(`prod_v9_${id}`, JSON.stringify(dados));
+    function mudarLayout(btn, total, cols, lins, orient) {
+        gradeAtual = { total, cols, lins, orientacao: orient };
+        document.body.className = (orient === 'landscape') ? 'page-landscape' : 'page-portrait';
+        canvasA4.className = (orient === 'landscape') ? 'print-landscape' : 'print-portrait';
+
+        if(orient === 'landscape') {
+            canvasA4.width = 3508;
+            canvasA4.height = 2480;
+        } else {
+            canvasA4.width = 2480;
+            canvasA4.height = 3508;
+        }
+
+        document.querySelectorAll('.btn-layout').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        gerarInputs();
         desenharGrade();
     }
 
-    function limparTudo() {
-        if(confirm("Deseja apagar todos os textos?")) {
-            for(let i=1; i<=9; i++) {
-                document.getElementById(`p${i}_nome`).value = '';
-                document.getElementById(`p${i}_preco`).value = '';
-                document.getElementById(`p${i}_cod`).value = '';
-                localStorage.removeItem(`prod_v9_${i}`);
-            }
-            desenharGrade();
+    function gerarInputs() {
+        const container = document.getElementById('inputsContainer');
+        container.innerHTML = '<h4>Dados das Etiquetas</h4>';
+        for (let i = 1; i <= gradeAtual.total; i++) {
+            container.innerHTML += `
+                <div class="prod-box">
+                    <small>Item ${i}</small>
+                    <input type="text" id="p${i}_nome" placeholder="Nome do Produto" oninput="desenharGrade()">
+                    <input type="text" id="p${i}_preco" placeholder="Preço" oninput="desenharGrade()">
+                    <input type="text" id="p${i}_cod" placeholder="Código" oninput="desenharGrade()">
+                </div>`;
         }
     }
 
@@ -109,66 +116,79 @@
         ctxA4.fillStyle = "white";
         ctxA4.fillRect(0, 0, canvasA4.width, canvasA4.height);
 
-        const larguraItem = canvasA4.width / 3;
-        const alturaItem = canvasA4.height / 3;
+        const larguraItem = canvasA4.width / gradeAtual.cols;
+        const alturaItem = canvasA4.height / gradeAtual.lins;
+        const baseRef = (gradeAtual.orientacao === 'landscape') ? 1754 : 826;
+        const esc = larguraItem / baseRef; 
 
-        for (let i = 0; i < 9; i++) {
-            const col = i % 3;
-            const lin = Math.floor(i / 3);
+        for (let i = 0; i < gradeAtual.total; i++) {
+            const col = i % gradeAtual.cols;
+            const lin = Math.floor(i / gradeAtual.cols);
             const x = col * larguraItem;
             const y = lin * alturaItem;
             
-            if (imgBase.complete && imgBase.width > 0) {
+            if (imgBase.src) {
                 ctxA4.drawImage(imgBase, x, y, larguraItem, alturaItem);
-            } else {
-                ctxA4.strokeStyle = "#ccc";
-                ctxA4.strokeRect(x, y, larguraItem, alturaItem);
             }
 
             const id = i + 1;
-            const nome = (document.getElementById(`p${id}_nome`).value || "").toUpperCase();
-            const preco = document.getElementById(`p${id}_preco`).value || "";
-            const cod = document.getElementById(`p${id}_cod`).value || "";
-            const esc = larguraItem / 826; 
+            const nome = (document.getElementById(`p${id}_nome`)?.value || "").toUpperCase();
+            const preco = document.getElementById(`p${id}_preco`)?.value || "";
+            const cod = document.getElementById(`p${id}_cod`)?.value || "";
 
-            // --- NOME DO PRODUTO (Azul) ---
-            ctxA4.fillStyle = "#2b388f";
-            ctxA4.font = `bold ${52 * esc}px Arial`;
             ctxA4.textAlign = "center";
             
+            let fSizeNome, posYNome, fSizePreco, posYPreco, posYCod, limiteChar, lineJump;
+
+            if (gradeAtual.total === 2) {
+                // AJUSTES CONFORME MARCAÇÕES EM VERMELHO (Somente Layout 2)
+                fSizeNome = 130;              // Nome maior conforme seta
+                posYNome = y + (950 * esc);  // Nome descendo mais
+                fSizePreco = 400;            // Preço grande
+                posYPreco = y + (1980 * esc); // Preço descendo para a área central/inferior
+                posYCod = y + (2320 * esc);   // Código descendo para a base
+                limiteChar = 15;
+                lineJump = 130;
+            } else {
+                // PADRÃO PARA OUTROS FORMATOS
+                fSizeNome = 52;
+                posYNome = y + (500 * esc);
+                fSizePreco = 230;
+                posYPreco = y + (950 * esc);
+                posYCod = y + (1095 * esc);
+                limiteChar = 18;
+                lineJump = 60;
+            }
+
+            // Nome
+            ctxA4.fillStyle = "#2b388f";
+            ctxA4.font = `bold ${fSizeNome * esc}px Arial`;
             const palavras = nome.split(' ');
             let linha = '';
-            let posY = y + (485 * esc); 
-            
-            // Ajuste: Reduzi para 22 caracteres para dar mais margem às bordas
-            const limiteCaracteres = 22; 
-
+            let currentY = posYNome;
             for(let n=0; n<palavras.length; n++){
-                let teste = linha + palavras[n] + ' ';
-                if(teste.length > limiteCaracteres && n > 0) {
-                    ctxA4.fillText(linha.trim(), x + (larguraItem/2), posY);
+                if((linha + palavras[n]).length > limiteChar) {
+                    ctxA4.fillText(linha.trim(), x + (larguraItem/2), currentY);
                     linha = palavras[n] + ' ';
-                    posY += (60 * esc);
-                } else { linha = teste; }
+                    currentY += (lineJump * esc);
+                } else { linha += palavras[n] + ' '; }
             }
-            ctxA4.fillText(linha.trim(), x + (larguraItem/2), posY);
+            ctxA4.fillText(linha.trim(), x + (larguraItem/2), currentY);
 
-            // --- PREÇO (Vermelho) ---
+            // Preço
             ctxA4.fillStyle = "#ed1c24";
-            ctxA4.font = `bold ${230 * esc}px Arial`;
-            ctxA4.textAlign = "center";
-            ctxA4.fillText(preco, x + (larguraItem/2), y + (950 * esc));
+            ctxA4.font = `bold ${fSizePreco * esc}px Arial`;
+            ctxA4.fillText(preco, x + (larguraItem/2), posYPreco);
 
-            // --- CÓDIGO (Preto) ---
+            // Código
             ctxA4.fillStyle = "#333333";
-            ctxA4.font = `bold ${38 * esc}px Arial`;
+            ctxA4.font = `bold ${42 * esc}px Arial`;
             ctxA4.textAlign = "left";
-            // Descido um pouco mais para a base (de 1065 para 1085)
-            ctxA4.fillText(cod, x + (235 * esc), y + (1085 * esc)); 
+            ctxA4.fillText(cod, x + (360 * esc), posYCod);
         }
     }
 
-    window.onload = desenharGrade;
+    window.onload = () => { gerarInputs(); desenharGrade(); };
 </script>
 </body>
 </html>
