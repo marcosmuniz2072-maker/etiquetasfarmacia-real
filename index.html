@@ -10,12 +10,11 @@
             .btn-layout { background: white; color: #2b388f; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
             .btn-layout.active { background: #ed1c24; color: white; }
             
-            /* Galeria de Modelos */
-            .galeria-modelos { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; display: flex; gap: 10px; border: 2px solid #2b388f; align-items: center; }
-            .btn-modelo { background: #f8f9fa; border: 1px solid #ddd; padding: 5px; cursor: pointer; border-radius: 5px; transition: 0.2s; text-align: center; }
+            .galeria-modelos { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; display: flex; gap: 10px; border: 2px solid #2b388f; align-items: center; flex-wrap: wrap; }
+            .btn-modelo { background: #f8f9fa; border: 1px solid #ddd; padding: 5px; cursor: pointer; border-radius: 5px; transition: 0.2s; text-align: center; width: 80px; }
             .btn-modelo:hover { border-color: #ed1c24; background: #fff1f1; }
-            .btn-modelo img { width: 60px; height: 80px; object-fit: contain; display: block; margin-bottom: 5px; }
-            .btn-modelo span { font-size: 10px; font-weight: bold; color: #333; }
+            .btn-modelo img { width: 60px; height: 80px; object-fit: contain; display: block; margin: 0 auto 5px; }
+            .btn-modelo span { font-size: 10px; font-weight: bold; color: #333; display: block; }
 
             .container { display: flex; gap: 20px; max-width: 1300px; width: 100%; align-items: flex-start; }
             .painel-input { flex: 1; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-height: 85vh; overflow-y: auto; }
@@ -26,7 +25,7 @@
             #folhaCanvas { background: white; border: 1px solid #999; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 100%; height: auto; }
             
             .btn-print { background: #28a745; color: white; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-bottom: 10px; width: 100%; }
-            .label-upload { background: #333; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-bottom: 15px; display: inline-block; font-weight: bold; }
+            .label-upload { background: #333; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px; font-weight: bold; font-size: 14px; }
         }
 
         @media print {
@@ -44,15 +43,13 @@
 <body class="page-portrait">
 
     <h2>Sistema de Etiquetas Farmácia Real</h2>
-	
-	<h2>Sistema de Etiquetas Farmácia Real</h2>
 
     <div class="galeria-modelos">
-        <strong style="color:#2b388f">MODELOS RÁPIDOS:</strong>
+        <strong style="color:#2b388f; margin-right: 10px;">MODELOS:</strong>
         
         <div class="btn-modelo" onclick="escolherModelo('BaseBranca1.png')">
-            <img src="BaseBranca1.png" alt="Base Branca">
-            <span>BASE BRANCA</span>
+            <img src="BaseBranca1.png" alt="Branca">
+            <span>BRANCA</span>
         </div>
 
         <div class="btn-modelo" onclick="escolherModelo('DIaD2.png')">
@@ -61,46 +58,17 @@
         </div>
 
         <div class="btn-modelo" onclick="escolherModelo('OfertaEspecial4.png')">
-            <img src="OfertaEspecial4.png" alt="Oferta Especial">
-            <span>OFERTA ESP.</span>
+            <img src="OfertaEspecial4.png" alt="Oferta">
+            <span>OFERTA</span>
         </div>
 
         <div class="btn-modelo" onclick="escolherModelo('NaoOferta3.png')">
-            <img src="NaoOferta3.png" alt="Nferta">
+            <img src="NaoOferta3.png" alt="Nao Oferta">
             <span>NÃO OFERTA</span>
         </div>
 
-        <label class="label-upload" style="margin:0; margin-left:20px;">
-            OU CARREGAR OUTRO...
-            <input type="file" id="loader" accept="image/*" style="display:none">
-        </label>
-    </div>
-
-    <div class="galeria-modelos">
-        <strong style="color:#2b388f">MODELOS RÁPIDOS:</strong>
-        
-        <div class="btn-modelo" onclick="escolherModelo('BaseBranca1.png')">
-            <img src="fundo1.png" alt="Modelo 1">
-            <span>DIA D</span>
-        </div>
-
-        <div class="btn-modelo" onclick="escolherModelo('DIaD2.png')">
-            <img src="fundo2.png" alt="Modelo 2">
-            <span>OFERTA</span>
-        </div>
-
-	  <div class="btn-modelo" onclick="escolherModelo('OfertaEspecial4.png')">
-            <img src="fundo2.png" alt="Modelo 2">
-            <span>OFERTA</span>
-        </div>
-
-	  <div class="btn-modelo" onclick="escolherModelo('NaoOferta3.png')">
-            <img src="fundo2.png" alt="Modelo 2">
-            <span>OFERTA</span>
-        </div>
-
-        <label class="label-upload" style="margin:0; margin-left:20px;">
-            OU CARREGAR OUTRO...
+        <label class="label-upload">
+            + OUTRO
             <input type="file" id="loader" accept="image/*" style="display:none">
         </label>
     </div>
@@ -108,7 +76,7 @@
     <div class="menu-layout">
         <span>FORMATO:</span>
         <button class="btn-layout" onclick="mudarLayout(this, 1, 1, 1, 'portrait')">1 (A4)</button>
-        <button class="btn-layout" onclick="mudarLayout(this, 2, 2, 1, 'landscape')">2 UNID. (PAISAGEM)</button>
+        <button class="btn-layout" onclick="mudarLayout(this, 2, 2, 1, 'landscape')">2 UNID.</button>
         <button class="btn-layout" onclick="mudarLayout(this, 4, 2, 2, 'portrait')">4 UNID.</button>
         <button class="btn-layout active" onclick="mudarLayout(this, 9, 3, 3, 'portrait')">9 UNID.</button>
     </div>
@@ -131,11 +99,10 @@
     canvasA4.width = 2480; 
     canvasA4.height = 3508;
 
-    // Função para carregar modelo pronto
     function escolherModelo(nomeArquivo) {
         imgBase = new Image();
         imgBase.onload = () => desenharGrade();
-        imgBase.src = nomeArquivo; // O arquivo deve estar no mesmo local do index.html
+        imgBase.src = nomeArquivo;
     }
 
     loader.onchange = (e) => {
@@ -152,14 +119,8 @@
         gradeAtual = { total, cols, lins, orientacao: orient };
         document.body.className = (orient === 'landscape') ? 'page-landscape' : 'page-portrait';
         canvasA4.className = (orient === 'landscape') ? 'print-landscape' : 'print-portrait';
-
-        if(orient === 'landscape') {
-            canvasA4.width = 3508;
-            canvasA4.height = 2480;
-        } else {
-            canvasA4.width = 2480;
-            canvasA4.height = 3508;
-        }
+        canvasA4.width = (orient === 'landscape') ? 3508 : 2480;
+        canvasA4.height = (orient === 'landscape') ? 2480 : 3508;
 
         document.querySelectorAll('.btn-layout').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -206,37 +167,36 @@
             const cod = document.getElementById(`p${id}_cod`)?.value || "";
 
             ctxA4.textAlign = "center";
-            
             let fSizeNome, posYNome, fSizePreco, posYPreco, posYCod, limiteChar, lineJump;
 
-            // --- SUAS LÓGICAS DE POSIÇÃO ---
+            // --- LÓGICAS DE POSIÇÃO (Ajuste as linhas aqui) ---
             if (gradeAtual.total === 2) {
-                fSizeNome = 130;
-                posYNome = y + (950 * esc);
-                fSizePreco = 400;
-                posYPreco = y + (1980 * esc);
+                fSizeNome = 160;
+                posYNome = y + (980 * esc); // Linha 148: Posição Nome Layout 2
+                fSizePreco = 430;
+                posYPreco = y + (2080 * esc); // Linha 148: Posição Preço Layout 2
                 posYCod = y + (2320 * esc);
-                limiteChar = 15;
-                lineJump = 130;
+                limiteChar = 13;
+                lineJump = 160;
             } else if (gradeAtual.total === 1) {
-                fSizeNome = 180;
-                posYNome = y + (1200 * esc);
-                fSizePreco = 600;
-                posYPreco = y + (2500 * esc);
-                posYCod = y + (3200 * esc);
-                limiteChar = 12;
-                lineJump = 200;
+                fSizeNome = 120;
+                posYNome = y + (440 * esc); // Linha 156: Posição Nome A4
+                fSizePreco = 220;
+                posYPreco = y + (990 * esc); // Linha 158: Posição Preço A4
+                posYCod = y + (1150 * esc);
+                limiteChar = 8;
+                lineJump = 130;
             } else {
-                fSizeNome = 52;
+                fSizeNome = 62;
                 posYNome = y + (500 * esc);
                 fSizePreco = 230;
-                posYPreco = y + (950 * esc);
-                posYCod = y + (1095 * esc);
+                posYPreco = y + (980 * esc);
+                posYCod = y + (1100 * esc);
                 limiteChar = 18;
                 lineJump = 60;
             }
 
-            // Nome
+            // Desenhar Nome
             ctxA4.fillStyle = "#2b388f";
             ctxA4.font = `bold ${fSizeNome * esc}px Arial`;
             const palavras = nome.split(' ');
@@ -251,12 +211,12 @@
             }
             ctxA4.fillText(linha.trim(), x + (larguraItem/2), currentY);
 
-            // Preço
+            // Desenhar Preço
             ctxA4.fillStyle = "#ed1c24";
             ctxA4.font = `bold ${fSizePreco * esc}px Arial`;
             ctxA4.fillText(preco, x + (larguraItem/2), posYPreco);
 
-            // Código
+            // Desenhar Código
             ctxA4.fillStyle = "#333333";
             ctxA4.font = `bold ${42 * esc}px Arial`;
             ctxA4.textAlign = "left";
