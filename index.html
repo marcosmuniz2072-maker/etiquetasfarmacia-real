@@ -170,30 +170,44 @@
             let fSizeNome, posYNome, fSizePreco, posYPreco, posYCod, limiteChar, lineJump;
 
             // --- LÓGICAS DE POSIÇÃO (Ajuste as linhas aqui) ---
-            if (gradeAtual.total === 2) {
-                fSizeNome = 160;
-                posYNome = y + (980 * esc); // Linha 148: Posição Nome Layout 2
-                fSizePreco = 430;
-                posYPreco = y + (2080 * esc); // Linha 148: Posição Preço Layout 2
-                posYCod = y + (2320 * esc);
-                limiteChar = 13;
-                lineJump = 160;
-            } else if (gradeAtual.total === 1) {
+          // --- LÓGICAS DE POSIÇÃO PERSONALIZADAS ---
+            if (gradeAtual.total === 1) {
+                // AJUSTES PARA 1 UNIDADE (A4)
                 fSizeNome = 120;
-                posYNome = y + (440 * esc); // Linha 156: Posição Nome A4
+                posYNome = y + (440 * esc); 
                 fSizePreco = 220;
-                posYPreco = y + (990 * esc); // Linha 158: Posição Preço A4
+                posYPreco = y + (990 * esc); 
                 posYCod = y + (1150 * esc);
                 limiteChar = 8;
                 lineJump = 130;
+            } else if (gradeAtual.total === 2) {
+                // AJUSTES PARA 2 UNIDADES (PAISAGEM)
+                fSizeNome = 160;
+                posYNome = y + (980 * esc); 
+                fSizePreco = 430;
+                posYPreco = y + (2080 * esc); 
+                posYCod = y + (2320 * esc);
+                limiteChar = 13;
+                lineJump = 160;
+            } else if (gradeAtual.total === 4) {
+                // AJUSTES PARA 4 UNIDADES
+                fSizeNome = 85;               // Fonte um pouco maior que a de 9
+                posYNome = y + (550 * esc);   // Altura do nome
+                fSizePreco = 300;             // Preço maior para preencher
+                posYPreco = y + (1150 * esc); // Baixei o preço para não bater no topo
+                posYCod = y + (1300 * esc);   // Posição do código
+                limiteChar = 15;
+                lineJump = 90;
             } else {
+                // AJUSTES PARA 9 UNIDADES (PADRÃO)
                 fSizeNome = 62;
                 posYNome = y + (500 * esc);
                 fSizePreco = 230;
                 posYPreco = y + (980 * esc);
-                posYCod = y + (1050 * esc);
+                posYCod = y + (1100 * esc);
                 limiteChar = 18;
                 lineJump = 60;
+            }
             }
 
             // Desenhar Nome
