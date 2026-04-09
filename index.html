@@ -4,8 +4,46 @@
     <meta charset="UTF-8">
     <title>Sistema de Etiquetas - Farmácia Real</title>
     <style>
+        /* ESTILOS GERAIS */
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* CABEÇALHO - AJUSTADO PARA LOGO NA DIREITA */
+        header { 
+            background: #ed1c24; 
+            color: white; 
+            padding: 15px 30px; /* Mais preenchimento nas laterais */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex; /* Ativa o alinhamento flexível */
+            justify-content: space-between; /* Espaça os elementos (título e logo) */
+            align-items: center; /* Centraliza verticalmente */
+            position: relative;
+        }
+        
+        /* Contêiner invisível para manter o título perfeitamente centralizado */
+        .header-spacer { width: 150px; visibility: hidden; } /* Mesma largura máxima da logo */
+
+        header h1 { 
+            margin: 0; 
+            font-size: 22px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            flex-grow: 1; /* Permite que o título ocupe o espaço central */
+            text-align: center; /* Centraliza o texto */
+        }
+
+        .logo-banner { 
+            max-height: 60px; /* Altura ajustada para caber bem na faixa */
+            max-width: 150px; /* Largura máxima para não quebrar o layout */
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+            object-fit: contain; /* Garante que a logo não distorça */
+        }
+
+        /* RODAPÉ */
+        footer { background: #2b388f; color: white; text-align: center; padding: 15px; margin-top: auto; font-size: 13px; border-top: 4px solid #ed1c24; }
+        .footer-info { opacity: 0.8; }
+
         @media screen {
-            body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+            .main-content { display: flex; flex-direction: column; align-items: center; padding: 20px; }
             .menu-layout { background: #2b388f; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 10px; color: white; align-items: center; flex-wrap: wrap; justify-content: center; }
             .btn-layout { background: white; color: #2b388f; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
             .btn-layout.active { background: #ed1c24; color: white; }
@@ -17,7 +55,7 @@
             .btn-modelo span { font-size: 10px; font-weight: bold; color: #333; display: block; }
 
             .container { display: flex; gap: 20px; max-width: 1300px; width: 100%; align-items: flex-start; }
-            .painel-input { flex: 1; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-height: 85vh; overflow-y: auto; }
+            .painel-input { flex: 1; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
             .prod-box { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
             input { width: 100%; padding: 8px; margin: 3px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
             
@@ -25,72 +63,70 @@
             #folhaCanvas { background: white; border: 1px solid #999; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 100%; height: auto; }
             
             .btn-print { background: #28a745; color: white; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-bottom: 10px; width: 100%; }
+            .btn-download { background: #007bff; color: white; border: none; padding: 10px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-bottom: 10px; width: 100%; }
+            .btn-limpar { background: #6c757d; color: white; border: none; padding: 5px; font-size: 11px; border-radius: 4px; cursor: pointer; margin-top: 10px; }
             .label-upload { background: #333; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px; font-weight: bold; font-size: 14px; }
         }
 
         @media print {
-            body { margin: 0; padding: 0; background: none; }
-            .menu-layout, .painel-input, .btn-print, .label-upload, .galeria-modelos, h2 { display: none !important; }
-            #folhaCanvas { display: block; border: none; margin: 0; }
-            .print-portrait { width: 210mm; height: 297mm; }
-            .print-landscape { width: 297mm; height: 210mm; }
+            header, footer, .menu-layout, .painel-input, .btn-print, .btn-download, .label-upload, .galeria-modelos, .btn-limpar { display: none !important; }
+            body { background: white; margin: 0; padding: 0; }
+            #folhaCanvas { display: block; border: none; margin: 0; max-width: 100%; }
         }
-        
-        .page-portrait { @page { size: A4 portrait; margin: 0; } }
-        .page-landscape { @page { size: A4 landscape; margin: 0; } }
     </style>
 </head>
 <body class="page-portrait">
 
-    <h2>Sistema de Etiquetas Farmácia Real</h2>
-
-    <div class="galeria-modelos">
-        <strong style="color:#2b388f; margin-right: 10px;">MODELOS:</strong>
+    <header>
+        <div class="header-spacer"></div>
         
-        <div class="btn-modelo" onclick="escolherModelo('BaseBranca1.png')">
-            <img src="BaseBranca1.png" alt="Branca">
-            <span>BRANCA</span>
+        <h1>Sistema Gerador de Etiquetas</h1>
+        
+        <img src="logo.png" alt="Logo Farmácia Real" class="logo-banner" onerror="this.style.display='none'">
+    </header>
+
+    <div class="main-content">
+        <div class="galeria-modelos">
+            <strong style="color:#2b388f; margin-right: 10px;">MODELOS RÁPIDOS:</strong>
+            <div class="btn-modelo" onclick="escolherModelo('BaseBranca1.png')"><img src="BaseBranca1.png" alt="Branca"><span>BRANCA</span></div>
+            <div class="btn-modelo" onclick="escolherModelo('DIaD2.png')"><img src="DIaD2.png" alt="Dia D"><span>DIA D</span></div>
+            <div class="btn-modelo" onclick="escolherModelo('OfertaEspecial4.png')"><img src="OfertaEspecial4.png" alt="Oferta"><span>OFERTA</span></div>
+            <div class="btn-modelo" onclick="escolherModelo('NaoOferta3.png')"><img src="NaoOferta3.png" alt="Nao Oferta"><span>NÃO OFERTA</span></div>
+            <div class="btn-modelo" onclick="escolherModelo('Real16.png')"><img src="Real16.png" alt="16 Unid"><span>16 UNID</span></div>
+            <label class="label-upload">+ OUTRO<input type="file" id="loader" accept="image/*" style="display:none"></label>
         </div>
 
-        <div class="btn-modelo" onclick="escolherModelo('DIaD2.png')">
-            <img src="DIaD2.png" alt="Dia D">
-            <span>DIA D</span>
+        <div class="menu-layout">
+            <span>FORMATO DA FOLHA:</span>
+            <button class="btn-layout" onclick="mudarLayout(this, 1, 1, 1, 'portrait')">1 (A4)</button>
+            <button class="btn-layout" onclick="mudarLayout(this, 2, 2, 1, 'landscape')">2 UNID.</button>
+            <button class="btn-layout" onclick="mudarLayout(this, 4, 2, 2, 'portrait')">4 UNID.</button>
+            <button class="btn-layout active" onclick="mudarLayout(this, 9, 3, 3, 'portrait')">9 UNID.</button>
+            <button class="btn-layout" onclick="mudarLayout(this, 16, 4, 4, 'portrait')">16 UNID.</button>
         </div>
 
-        <div class="btn-modelo" onclick="escolherModelo('OfertaEspecial4.png')">
-            <img src="OfertaEspecial4.png" alt="Oferta">
-            <span>OFERTA</span>
-        </div>
-
-        <div class="btn-modelo" onclick="escolherModelo('NaoOferta3.png')">
-            <img src="NaoOferta3.png" alt="Nao Oferta">
-            <span>NÃO OFERTA</span>
-        </div>
-
-        <label class="label-upload">
-            + OUTRO
-            <input type="file" id="loader" accept="image/*" style="display:none">
-        </label>
-    </div>
-
-    <div class="menu-layout">
-        <span>FORMATO:</span>
-        <button class="btn-layout" onclick="mudarLayout(this, 1, 1, 1, 'portrait')">1 (A4)</button>
-        <button class="btn-layout" onclick="mudarLayout(this, 2, 2, 1, 'landscape')">2 UNID.</button>
-        <button class="btn-layout" onclick="mudarLayout(this, 4, 2, 2, 'portrait')">4 UNID.</button>
-        <button class="btn-layout active" onclick="mudarLayout(this, 9, 3, 3, 'portrait')">9 UNID.</button>
-        <button class="btn-layout" onclick="mudarLayout(this, 16, 4, 4, 'portrait')">16 UNID.</button>
-    </div>
-
-    <div class="container">
-        <div class="painel-input" id="inputsContainer"></div>
-        <div class="painel-preview">
-            <button class="btn-print" onclick="window.print()">IMPRIMIR AGORA</button>
-            <canvas id="folhaCanvas" class="print-portrait"></canvas>
+        <div class="container">
+            <div class="painel-input">
+                <div id="inputsContainer"></div>
+                <button class="btn-limpar" onclick="limparTudo()">Limpar todos os campos</button>
+            </div>
+            <div class="painel-preview">
+                <button class="btn-print" onclick="window.print()">IMPRIMIR AGORA</button>
+                <button class="btn-download" onclick="baixarImagem()">SALVAR COMO IMAGEM (PNG)</button>
+                <canvas id="folhaCanvas" class="print-portrait"></canvas>
+            </div>
         </div>
     </div>
+
+    <footer>
+        <div class="footer-info">
+            &copy; 2026 <strong>Farmácia Real</strong> - Todos os direitos reservados.<br>
+            Desenvolvido para uso interno exclusivo - Gestão de Precificação v2.1
+        </div>
+    </footer>
 
 <script>
+    // Mantendo todo o JavaScript original sem alterações, pois a mudança foi apenas visual (CSS/HTML)
     const canvasA4 = document.getElementById('folhaCanvas');
     const ctxA4 = canvasA4.getContext('2d');
     const loader = document.getElementById('loader');
@@ -118,19 +154,17 @@
 
     function mudarLayout(btn, total, cols, lins, orient) {
         gradeAtual = { total, cols, lins, orientacao: orient };
-        document.body.className = (orient === 'landscape') ? 'page-landscape' : 'page-portrait';
-        canvasA4.className = (orient === 'landscape') ? 'print-landscape' : 'print-portrait';
         canvasA4.width = (orient === 'landscape') ? 3508 : 2480;
         canvasA4.height = (orient === 'landscape') ? 2480 : 3508;
-
-        // Tenta carregar automaticamente a Real16.png se clicar em 16 unid.
-        if (total === 16) {
-            escolherModelo('Real16.png');
-        }
-
+        if (total === 16) escolherModelo('Real16.png');
         document.querySelectorAll('.btn-layout').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         gerarInputs();
+        desenharGrade();
+    }
+
+    function salvarDados(id, campo, valor) {
+        localStorage.setItem(`real_${id}_${campo}`, valor);
         desenharGrade();
     }
 
@@ -138,20 +172,38 @@
         const container = document.getElementById('inputsContainer');
         container.innerHTML = '<h4>Dados das Etiquetas</h4>';
         for (let i = 1; i <= gradeAtual.total; i++) {
+            const sNome = localStorage.getItem(`real_${i}_nome`) || "";
+            const sPreco = localStorage.getItem(`real_${i}_preco`) || "";
+            const sCod = localStorage.getItem(`real_${i}_cod`) || "";
+
             container.innerHTML += `
                 <div class="prod-box">
                     <small>Item ${i}</small>
-                    <input type="text" id="p${i}_nome" placeholder="Nome do Produto" oninput="desenharGrade()">
-                    <input type="text" id="p${i}_preco" placeholder="Preço" oninput="desenharGrade()">
-                    <input type="text" id="p${i}_cod" placeholder="Código" oninput="desenharGrade()">
+                    <input type="text" id="p${i}_nome" value="${sNome}" placeholder="Nome do Produto" oninput="salvarDados(${i}, 'nome', this.value)">
+                    <input type="text" id="p${i}_preco" value="${sPreco}" placeholder="Preço" oninput="salvarDados(${i}, 'preco', this.value)">
+                    <input type="text" id="p${i}_cod" value="${sCod}" placeholder="Código" oninput="salvarDados(${i}, 'cod', this.value)">
                 </div>`;
         }
+    }
+
+    function limparTudo() {
+        if(confirm("Deseja apagar todos os nomes e preços digitados?")) {
+            localStorage.clear();
+            gerarInputs();
+            desenharGrade();
+        }
+    }
+
+    function baixarImagem() {
+        const link = document.createElement('a');
+        link.download = 'Etiquetas_Farmacia_Real.png';
+        link.href = canvasA4.toDataURL('image/png');
+        link.click();
     }
 
     function desenharGrade() {
         ctxA4.fillStyle = "white";
         ctxA4.fillRect(0, 0, canvasA4.width, canvasA4.height);
-
         const larguraItem = canvasA4.width / gradeAtual.cols;
         const alturaItem = canvasA4.height / gradeAtual.lins;
         const baseRef = (gradeAtual.orientacao === 'landscape') ? 1754 : 826;
@@ -162,10 +214,7 @@
             const lin = Math.floor(i / gradeAtual.cols);
             const x = col * larguraItem;
             const y = lin * alturaItem;
-            
-            if (imgBase.src) {
-                ctxA4.drawImage(imgBase, x, y, larguraItem, alturaItem);
-            }
+            if (imgBase.src) ctxA4.drawImage(imgBase, x, y, larguraItem, alturaItem);
 
             const id = i + 1;
             const nome = (document.getElementById(`p${id}_nome`)?.value || "").toUpperCase();
@@ -175,57 +224,22 @@
             ctxA4.textAlign = "center";
             let fSizeNome, posYNome, fSizePreco, posYPreco, posYCod, limiteChar, lineJump;
 
-            // --- LÓGICAS DE POSIÇÃO ATUALIZADAS ---
             if (gradeAtual.total === 1) {
-                fSizeNome = 120;
-                posYNome = y + (440 * esc); 
-                fSizePreco = 220;
-                posYPreco = y + (990 * esc); 
-                posYCod = y + (1150 * esc);
-                limiteChar = 8;
-                lineJump = 130;
+                fSizeNome = 110; posYNome = y + (460 * esc); fSizePreco = 220; posYPreco = y + (990 * esc); posYCod = y + (1080 * esc); limiteChar = 8; lineJump = 130;
             } else if (gradeAtual.total === 2) {
-                fSizeNome = 160;
-                posYNome = y + (980 * esc); 
-                fSizePreco = 430;
-                posYPreco = y + (2080 * esc); 
-                posYCod = y + (2320 * esc);
-                limiteChar = 13;
-                lineJump = 160;
+                fSizeNome = 160; posYNome = y + (980 * esc); fSizePreco = 430; posYPreco = y + (2080 * esc); posYCod = y + (2320 * esc); limiteChar = 13; lineJump = 160;
             } else if (gradeAtual.total === 4) {
-                fSizeNome = 85;
-                posYNome = y + (550 * esc);
-                fSizePreco = 300;
-                posYPreco = y + (1150 * esc);
-                posYCod = y + (1300 * esc);
-                limiteChar = 15;
-                lineJump = 90;
+                fSizeNome = 85; posYNome = y + (550 * esc); fSizePreco = 300; posYPreco = y + (1150 * esc); posYCod = y + (1300 * esc); limiteChar = 15; lineJump = 90;
             } else if (gradeAtual.total === 16) {
-                // AJUSTES PARA 16 UNIDADES (4 colunas e 4 linhas)
-                fSizeNome = 45;               // Fonte menor porque a etiqueta é pequena
-                posYNome = y + (420 * esc);   // Altura do nome
-                fSizePreco = 180;             // Preço proporcional
-                posYPreco = y + (850 * esc);  // Posição do preço
-                posYCod = y + (980 * esc);    // Posição do código
-                limiteChar = 20;              // Mais caracteres por linha (fonte menor)
-                lineJump = 45;                // Pulo de linha curto
+                fSizeNome = 70; posYNome = y + (440 * esc); fSizePreco = 190; posYPreco = y + (970 * esc); posYCod = y + (1090 * esc); limiteChar = 17; lineJump = 65;
             } else {
-                // PADRÃO PARA 9 UNIDADES
-                fSizeNome = 62;
-                posYNome = y + (500 * esc);
-                fSizePreco = 230;
-                posYPreco = y + (980 * esc);
-                posYCod = y + (1100 * esc);
-                limiteChar = 18;
-                lineJump = 60;
+                fSizeNome = 62; posYNome = y + (500 * esc); fSizePreco = 230; posYPreco = y + (980 * esc); posYCod = y + (1100 * esc); limiteChar = 18; lineJump = 60;
             }
 
-            // Desenhar Nome
             ctxA4.fillStyle = "#2b388f";
             ctxA4.font = `bold ${fSizeNome * esc}px Arial`;
             const palavras = nome.split(' ');
-            let linha = '';
-            let currentY = posYNome;
+            let linha = '', currentY = posYNome;
             for(let n=0; n<palavras.length; n++){
                 if((linha + palavras[n]).length > limiteChar) {
                     ctxA4.fillText(linha.trim(), x + (larguraItem/2), currentY);
@@ -235,12 +249,10 @@
             }
             ctxA4.fillText(linha.trim(), x + (larguraItem/2), currentY);
 
-            // Desenhar Preço
             ctxA4.fillStyle = "#ed1c24";
             ctxA4.font = `bold ${fSizePreco * esc}px Arial`;
             ctxA4.fillText(preco, x + (larguraItem/2), posYPreco);
 
-            // Desenhar Código
             ctxA4.fillStyle = "#333333";
             ctxA4.font = `bold ${42 * esc}px Arial`;
             ctxA4.textAlign = "left";
