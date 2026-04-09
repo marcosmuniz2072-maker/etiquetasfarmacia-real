@@ -79,6 +79,7 @@
         <button class="btn-layout" onclick="mudarLayout(this, 2, 2, 1, 'landscape')">2 UNID.</button>
         <button class="btn-layout" onclick="mudarLayout(this, 4, 2, 2, 'portrait')">4 UNID.</button>
         <button class="btn-layout active" onclick="mudarLayout(this, 9, 3, 3, 'portrait')">9 UNID.</button>
+        <button class="btn-layout" onclick="mudarLayout(this, 16, 4, 4, 'portrait')">16 UNID.</button>
     </div>
 
     <div class="container">
@@ -121,6 +122,11 @@
         canvasA4.className = (orient === 'landscape') ? 'print-landscape' : 'print-portrait';
         canvasA4.width = (orient === 'landscape') ? 3508 : 2480;
         canvasA4.height = (orient === 'landscape') ? 2480 : 3508;
+
+        // Tenta carregar automaticamente a Real16.png se clicar em 16 unid.
+        if (total === 16) {
+            escolherModelo('Real16.png');
+        }
 
         document.querySelectorAll('.btn-layout').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -169,10 +175,8 @@
             ctxA4.textAlign = "center";
             let fSizeNome, posYNome, fSizePreco, posYPreco, posYCod, limiteChar, lineJump;
 
-            // --- LÓGICAS DE POSIÇÃO (Ajuste as linhas aqui) ---
-          // --- LÓGICAS DE POSIÇÃO PERSONALIZADAS ---
+            // --- LÓGICAS DE POSIÇÃO ATUALIZADAS ---
             if (gradeAtual.total === 1) {
-                // AJUSTES PARA 1 UNIDADE (A4)
                 fSizeNome = 120;
                 posYNome = y + (440 * esc); 
                 fSizePreco = 220;
@@ -181,7 +185,6 @@
                 limiteChar = 8;
                 lineJump = 130;
             } else if (gradeAtual.total === 2) {
-                // AJUSTES PARA 2 UNIDADES (PAISAGEM)
                 fSizeNome = 160;
                 posYNome = y + (980 * esc); 
                 fSizePreco = 430;
@@ -190,16 +193,24 @@
                 limiteChar = 13;
                 lineJump = 160;
             } else if (gradeAtual.total === 4) {
-                // AJUSTES PARA 4 UNIDADES
-                fSizeNome = 85;               // Fonte um pouco maior que a de 9
-                posYNome = y + (550 * esc);   // Altura do nome
-                fSizePreco = 300;             // Preço maior para preencher
-                posYPreco = y + (1150 * esc); // Baixei o preço para não bater no topo
-                posYCod = y + (1300 * esc);   // Posição do código
+                fSizeNome = 85;
+                posYNome = y + (550 * esc);
+                fSizePreco = 300;
+                posYPreco = y + (1150 * esc);
+                posYCod = y + (1300 * esc);
                 limiteChar = 15;
                 lineJump = 90;
+            } else if (gradeAtual.total === 16) {
+                // AJUSTES PARA 16 UNIDADES (4 colunas e 4 linhas)
+                fSizeNome = 45;               // Fonte menor porque a etiqueta é pequena
+                posYNome = y + (420 * esc);   // Altura do nome
+                fSizePreco = 180;             // Preço proporcional
+                posYPreco = y + (850 * esc);  // Posição do preço
+                posYCod = y + (980 * esc);    // Posição do código
+                limiteChar = 20;              // Mais caracteres por linha (fonte menor)
+                lineJump = 45;                // Pulo de linha curto
             } else {
-                // AJUSTES PARA 9 UNIDADES (PADRÃO)
+                // PADRÃO PARA 9 UNIDADES
                 fSizeNome = 62;
                 posYNome = y + (500 * esc);
                 fSizePreco = 230;
@@ -207,7 +218,6 @@
                 posYCod = y + (1100 * esc);
                 limiteChar = 18;
                 lineJump = 60;
-            }
             }
 
             // Desenhar Nome
